@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>经期记录页预演</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #251b22;
+      background: #fff7fa;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 32px 18px;
+      box-sizing: border-box;
+    }
+
+    main {
+      width: min(560px, 100%);
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(28px, 6vw, 42px);
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0 0 24px;
+      color: #6d5964;
+      line-height: 1.7;
+    }
+
+    nav {
+      display: grid;
+      gap: 12px;
+    }
+
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 58px;
+      padding: 0 18px;
+      border: 1px solid #f0cfdb;
+      border-radius: 8px;
+      color: #251b22;
+      background: #fff;
+      text-decoration: none;
+      box-shadow: 0 10px 28px rgba(150, 72, 101, 0.08);
+    }
+
+    a span {
+      color: #9d4f6b;
+      font-size: 20px;
+    }
+
+    a:focus-visible {
+      outline: 3px solid #ff93b6;
+      outline-offset: 3px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>经期记录页预演</h1>
+    <p>选择一个版本查看。这个入口页用于 Netlify 根地址访问，三个 HTML 页面仍然保留原路径。</p>
+    <nav aria-label="页面列表">
+      <a href="./record-only.html">单次预演 <span aria-hidden="true">›</span></a>
+      <a href="./record-blood.html">血量预演 <span aria-hidden="true">›</span></a>
+      <a href="./record-three.html">三轮预演 <span aria-hidden="true">›</span></a>
+    </nav>
+  </main>
+</body>
+</html>
