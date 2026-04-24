@@ -1,83 +1,183 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>经期记录页预演</title>
+  <title>LiquidUI 三个方案总览</title>
   <style>
     :root {
-      color-scheme: light;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: #251b22;
-      background: #fff7fa;
+      color-scheme: dark;
+      --bg: #09111f;
+      --bg-accent: #13253f;
+      --panel: rgba(11, 19, 34, 0.72);
+      --panel-border: rgba(255, 255, 255, 0.14);
+      --text: #f4f7fb;
+      --muted: rgba(244, 247, 251, 0.72);
+      --glow: rgba(114, 193, 255, 0.24);
+      --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      font-family: "SF Pro Display", "PingFang SC", "Helvetica Neue", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
     }
 
     body {
       margin: 0;
       min-height: 100vh;
-      display: grid;
-      place-items: center;
-      padding: 32px 18px;
-      box-sizing: border-box;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top, rgba(117, 201, 255, 0.16), transparent 34%),
+        radial-gradient(circle at 85% 20%, rgba(118, 137, 255, 0.12), transparent 22%),
+        linear-gradient(160deg, var(--bg), var(--bg-accent));
     }
 
-    main {
-      width: min(560px, 100%);
+    .shell {
+      width: min(1160px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 48px 0 64px;
+    }
+
+    .hero {
+      padding: 28px;
+      border: 1px solid var(--panel-border);
+      border-radius: 28px;
+      background: var(--panel);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      box-shadow: var(--card-shadow);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #8fd6ff;
     }
 
     h1 {
-      margin: 0 0 10px;
-      font-size: clamp(28px, 6vw, 42px);
-      line-height: 1.15;
-      letter-spacing: 0;
+      margin: 0;
+      font-size: clamp(32px, 6vw, 56px);
+      line-height: 1.02;
     }
 
-    p {
-      margin: 0 0 24px;
-      color: #6d5964;
+    .intro {
+      max-width: 720px;
+      margin: 18px 0 0;
+      font-size: 17px;
       line-height: 1.7;
+      color: var(--muted);
     }
 
-    nav {
+    .grid {
       display: grid;
-      gap: 12px;
+      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      margin-top: 26px;
     }
 
-    a {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      min-height: 58px;
-      padding: 0 18px;
-      border: 1px solid #f0cfdb;
-      border-radius: 8px;
-      color: #251b22;
-      background: #fff;
+    .card {
+      position: relative;
+      overflow: hidden;
+      min-height: 280px;
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
       text-decoration: none;
-      box-shadow: 0 10px 28px rgba(150, 72, 101, 0.08);
+      color: inherit;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)),
+        rgba(8, 14, 25, 0.76);
+      box-shadow: var(--card-shadow);
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
     }
 
-    a span {
-      color: #9d4f6b;
-      font-size: 20px;
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(143, 214, 255, 0.45);
+      box-shadow: 0 24px 68px rgba(0, 0, 0, 0.42);
     }
 
-    a:focus-visible {
-      outline: 3px solid #ff93b6;
-      outline-offset: 3px;
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: auto -18% -32% auto;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: var(--glow);
+      filter: blur(10px);
+    }
+
+    .tag {
+      display: inline-flex;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.86);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .card h2 {
+      margin: 18px 0 8px;
+      font-size: 28px;
+    }
+
+    .card p {
+      margin: 0;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 24px;
+      font-size: 15px;
+      color: #9fe3ff;
+    }
+
+    .footnote {
+      margin-top: 18px;
+      font-size: 14px;
+      color: rgba(244, 247, 251, 0.58);
     }
   </style>
 </head>
 <body>
-  <main>
-    <h1>经期记录页预演</h1>
-    <p>选择一个版本查看。这个入口页用于 Netlify 根地址访问，三个 HTML 页面仍然保留原路径。</p>
-    <nav aria-label="页面列表">
-      <a href="./record-only.html">单次预演 <span aria-hidden="true">›</span></a>
-      <a href="./record-blood.html">血量预演 <span aria-hidden="true">›</span></a>
-      <a href="./record-three.html">三轮预演 <span aria-hidden="true">›</span></a>
-    </nav>
+  <main class="shell">
+    <section class="hero">
+      <p class="eyebrow">LiquidUI / Netlify Ready</p>
+      <h1>三个 Liquid Glass 方案统一入口</h1>
+      <p class="intro">
+        这个站点已经整理为一个干净的静态发布版本，统一收纳 3 个五 Tab 方案，方便在 GitHub 仓库与 Netlify 中一起管理、预览和对比。
+      </p>
+      <div class="grid">
+        <a class="card" href="./variants/soft-light/">
+          <span class="tag">方案 1</span>
+          <h2>偏白</h2>
+          <p>更强调高光、玻璃边缘和清透感，适合偏亮环境下的液态质感展示。</p>
+          <span class="cta">打开页面 -></span>
+        </a>
+        <a class="card" href="./variants/dark-tint/">
+          <span class="tag">方案 2</span>
+          <h2>偏黑</h2>
+          <p>在玻璃层中加入更深的内敛阴影和选中态厚度，对比更明显，视觉更稳。</p>
+          <span class="cta">打开页面 -></span>
+        </a>
+        <a class="card" href="./variants/pure-gray/">
+          <span class="tag">方案 3</span>
+          <h2>纯灰</h2>
+          <p>去掉更强的液态拖影效果，控制到更冷静的灰阶风格，便于观察结构与层次。</p>
+          <span class="cta">打开页面 -></span>
+        </a>
+      </div>
+      <p class="footnote">发布方式：静态站点，首页为总览，子路径分别对应 3 个方案。</p>
+    </section>
   </main>
 </body>
 </html>

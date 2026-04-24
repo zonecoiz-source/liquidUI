@@ -1,0 +1,1171 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>iOS 26 Liquid Glass 五 Tab 预演</title>
+  <link rel="preload" as="image" href="../../assets/page-home.png">
+  <link rel="preload" as="image" href="../../assets/page-record.png">
+  <link rel="preload" as="image" href="../../assets/page-rebate.png">
+  <link rel="preload" as="image" href="../../assets/page-message.png">
+  <link rel="preload" as="image" href="../../assets/page-me.png">
+  <link rel="preload" as="image" href="../../assets/tabbar-home-on.svg">
+  <link rel="preload" as="image" href="../../assets/tabbar-record-off.svg">
+  <link rel="preload" as="image" href="../../assets/tabbar-rebate-off.svg">
+  <link rel="preload" as="image" href="../../assets/tabbar-message-off.svg">
+  <link rel="preload" as="image" href="../../assets/tabbar-me-off.svg">
+  <link rel="preload" as="image" href="../../assets/icon-record-on.svg">
+  <link rel="preload" as="image" href="../../assets/icon-rebate-on.svg">
+  <link rel="preload" as="image" href="../../assets/icon-message-on.svg">
+  <link rel="preload" as="image" href="../../assets/icon-me-on.svg">
+  <style>
+    :root {
+      --phone-w: 375px;
+      --phone-h: 812px;
+      --tabbar-top: 724px;
+      --tabbar-w: 351px;
+      --tabbar-h: 59px;
+      --tab-icon-size: 26px;
+      --publish-size: 64px;
+      --publish-gap: 34px;
+      --pill-w: 69.96px;
+      --pill-h: 53.61px;
+      --pill-left: 3.32px;
+      --pill-top: 3.19px;
+      --glass-edge: rgba(255, 255, 255, 0.82);
+      --glass-core: rgba(255, 255, 255, 0.56);
+      --glass-shadow: rgba(40, 52, 76, 0.14);
+      --tab-active: #ff4d88;
+      --tab-idle: #666666;
+      --homebar-image: url("../../assets/homebar.svg");
+      --publish-image: url("../../assets/publish-liquid.svg");
+      color-scheme: light;
+      font-family: "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+      background: #505050;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: #505050;
+    }
+
+    .phone {
+      width: 375px;
+      height: 812px;
+      width: var(--phone-w);
+      height: var(--phone-h);
+      position: relative;
+      overflow: hidden;
+      background: #f1f1f3;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.24);
+      isolation: isolate;
+    }
+
+    .screen-scroll {
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      scrollbar-width: none;
+    }
+
+    .screen-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .page-stack {
+      width: 375px;
+      height: 1345px;
+      width: var(--phone-w);
+      height: var(--page-h, 1345px);
+      position: relative;
+    }
+
+    .page-image {
+      width: 375px;
+      width: var(--phone-w);
+      height: var(--page-img-h, auto);
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      opacity: 0;
+      visibility: hidden;
+      max-width: none;
+      user-select: none;
+      pointer-events: none;
+      -webkit-user-drag: none;
+      transition: opacity 90ms linear;
+    }
+
+    .page-image.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* ───── Tabbar (iOS 26 Liquid Glass base) ───── */
+    .tabbar {
+      width: 351px;
+      height: 59px;
+      width: var(--tabbar-w);
+      height: var(--tabbar-h);
+      position: absolute;
+      top: 724px;
+      top: var(--tabbar-top);
+      left: 50%;
+      z-index: 10;
+      display: block;
+      padding: 0;
+      border-radius: 30px;
+      overflow: hidden;
+      border: 0.5px solid rgba(255, 255, 255, 0.72);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0.5)),
+        rgba(246, 249, 252, 0.42);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.94),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.42),
+        inset 0 0 18px rgba(255, 255, 255, 0.2),
+        0 18px 42px rgba(30, 40, 58, 0.12),
+        0 3px 9px rgba(30, 40, 58, 0.06);
+      transform: translateX(-50%);
+      backdrop-filter: blur(34px) saturate(180%) brightness(1.08);
+      -webkit-backdrop-filter: blur(34px) saturate(180%) brightness(1.08);
+      isolation: isolate;
+    }
+
+    .tabbar::before,
+    .tabbar::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .tabbar::before {
+      background:
+        radial-gradient(circle at 50% -18%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0) 48%),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 18% 82%, rgba(255, 255, 255, 0.18));
+      opacity: 0.82;
+      mix-blend-mode: screen;
+    }
+
+    .tabbar::after {
+      inset: auto 24px 5px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.26);
+      filter: blur(7px);
+      opacity: 0.58;
+    }
+
+    .selection-trail {
+      width: 69.96px;
+      height: 53.61px;
+      width: var(--trail-w, var(--pill-w));
+      height: var(--pill-h);
+      position: absolute;
+      top: 3.19px;
+      left: 3.32px;
+      top: var(--pill-top);
+      left: calc(var(--pill-left) + var(--trail-left, 0px));
+      z-index: 1;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle at left center, rgba(255, 255, 255, 0.54), rgba(255, 255, 255, 0.18) 42%, rgba(255, 255, 255, 0) 68%),
+        radial-gradient(circle at right center, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0.16) 42%, rgba(255, 255, 255, 0) 68%),
+        linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0));
+      box-shadow:
+        inset 0 0 0 0.5px rgba(255, 255, 255, 0.34),
+        0 8px 18px rgba(35, 44, 58, 0.045);
+      opacity: 0;
+      pointer-events: none;
+      transform: scaleX(0.92);
+      transform-origin: center;
+      filter: blur(0.55px);
+      backdrop-filter: blur(22px) saturate(170%) brightness(1.04);
+      -webkit-backdrop-filter: blur(22px) saturate(170%) brightness(1.04);
+      will-change: opacity, transform;
+    }
+
+    .selection-trail.travelling {
+      animation: liquidTrail var(--trail-duration, 480ms) cubic-bezier(0.22, 0.72, 0.22, 1) both;
+    }
+
+    @keyframes liquidTrail {
+      0% {
+        opacity: 0;
+        transform: scaleX(0.36);
+      }
+      34% {
+        opacity: 0.48;
+        transform: scaleX(0.98);
+      }
+      72% {
+        opacity: 0.2;
+        transform: scaleX(0.9);
+      }
+      100% {
+        opacity: 0;
+        transform: scaleX(0.42);
+      }
+    }
+
+    /* ───── 液态玻璃药丸 (selection pill) ───── */
+    .selection {
+      width: 69.96px;
+      height: 53.61px;
+      width: var(--pill-w);
+      height: var(--pill-h);
+      position: absolute;
+      top: 3.19px;
+      left: 3.32px;
+      top: var(--pill-top);
+      left: var(--pill-left);
+      z-index: 2;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle at 50% 12%, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.34) 42%, rgba(255, 255, 255, 0) 70%),
+        linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.74) 0%,
+          rgba(255, 255, 255, 0.42) 48%,
+          rgba(255, 255, 255, 0.58) 100%
+        ),
+        rgba(255, 255, 255, 0.34);
+      backdrop-filter: blur(24px) saturate(185%) brightness(1.09);
+      -webkit-backdrop-filter: blur(24px) saturate(185%) brightness(1.09);
+      box-shadow:
+        inset 0 1px 0.5px rgba(255, 255, 255, 0.95),
+        inset 0 -1px 1.5px rgba(255, 255, 255, 0.42),
+        inset 0 0 0 0.5px rgba(255, 255, 255, 0.62),
+        inset 0 0 14px rgba(255, 255, 255, 0.26),
+        0 0.5px 1px rgba(0, 0, 0, 0.04),
+        0 0 0 var(--chromatic-ring, 0px) rgba(255, 255, 255, 0),
+        -0.5px 0 3px var(--edge-cyan, rgba(185, 235, 255, 0)),
+        0.5px 0 3px var(--edge-pink, rgba(255, 190, 224, 0)),
+        0 -0.5px 4px var(--edge-gold, rgba(255, 236, 194, 0)),
+        0 8px 18px rgba(40, 52, 76, 0.1);
+      transform: translate3d(0, 0, 0);
+      transform: translate3d(var(--selection-x, 0px), 0, 0);
+      transform-origin: center;
+      will-change: transform, filter, box-shadow;
+    }
+
+    .selection::before {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 15%;
+      right: 15%;
+      height: 34%;
+      border-radius: 999px;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(185, 235, 255, 0.065),
+          rgba(255, 255, 255, 0.68) 30% 70%,
+          rgba(255, 190, 224, 0.055)
+        ),
+        linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.72) 0%,
+          rgba(255, 255, 255, 0) 100%
+        );
+      pointer-events: none;
+      opacity: 0.9;
+    }
+
+    .selection::after {
+      content: "";
+      position: absolute;
+      inset: 7px 9px 9px;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0)),
+        conic-gradient(from 145deg, rgba(185, 235, 255, 0.035), rgba(255, 255, 255, 0), rgba(255, 190, 224, 0.04), rgba(255, 236, 194, 0.03), rgba(185, 235, 255, 0.035));
+      box-shadow:
+        inset 0 0 9px rgba(255, 255, 255, 0.14),
+        inset 0.5px 0 0 rgba(185, 235, 255, 0.055),
+        inset -0.5px 0 0 rgba(255, 190, 224, 0.055);
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    .selection.chromatic-pop {
+      animation: chromaticPop var(--chromatic-duration, 520ms) cubic-bezier(0.22, 0.72, 0.22, 1) both;
+    }
+
+    @keyframes chromaticPop {
+      0% {
+        --chromatic-ring: 0px;
+        --edge-cyan: rgba(86, 217, 255, 0);
+        --edge-pink: rgba(255, 78, 160, 0);
+        --edge-gold: rgba(255, 215, 112, 0);
+      }
+      30% {
+        --chromatic-ring: 0.22px;
+        --edge-cyan: rgba(185, 235, 255, 0.11);
+        --edge-pink: rgba(255, 190, 224, 0.095);
+        --edge-gold: rgba(255, 236, 194, 0.075);
+      }
+      68% {
+        --chromatic-ring: 0.1px;
+        --edge-cyan: rgba(185, 235, 255, 0.045);
+        --edge-pink: rgba(255, 190, 224, 0.04);
+        --edge-gold: rgba(255, 236, 194, 0.03);
+      }
+      100% {
+        --chromatic-ring: 0px;
+        --edge-cyan: rgba(86, 217, 255, 0);
+        --edge-pink: rgba(255, 78, 160, 0);
+        --edge-gold: rgba(255, 215, 112, 0);
+      }
+    }
+
+    .tab-item {
+      width: 52px;
+      height: 59px;
+      height: var(--tabbar-h);
+      position: absolute;
+      top: 0;
+      left: 0;
+      left: calc(var(--tab-center) - 26px);
+      z-index: 3;
+      display: block;
+      border: 0;
+      margin: 0;
+      padding: 0;
+      color: #666666;
+      color: var(--tab-idle);
+      background: transparent;
+      font: inherit;
+      font-size: 11px;
+      line-height: 15px;
+      letter-spacing: 0;
+      white-space: nowrap;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition:
+        color 220ms ease,
+        transform 220ms cubic-bezier(0.34, 1.35, 0.5, 1);
+    }
+
+    .tab-item[data-tab="home"] {
+      --tab-center: 38px;
+      left: 12px;
+    }
+
+    .tab-item[data-tab="record"] {
+      --tab-center: 107px;
+      left: 81px;
+    }
+
+    .tab-item[data-tab="rebate"] {
+      --tab-center: 175px;
+      left: 149px;
+    }
+
+    .tab-item[data-tab="message"] {
+      --tab-center: 243px;
+      left: 217px;
+    }
+
+    .tab-item[data-tab="me"] {
+      --tab-center: 310px;
+      left: 284px;
+    }
+
+    .tab-item.active {
+      color: #ff4d88;
+      color: var(--tab-active);
+      transform: translateY(-1px);
+    }
+
+    .tab-icon {
+      width: 26px;
+      height: 26px;
+      min-width: 26px;
+      min-height: 26px;
+      width: var(--tab-icon-size);
+      height: var(--tab-icon-size);
+      min-width: var(--tab-icon-size);
+      min-height: var(--tab-icon-size);
+      position: absolute;
+      top: 9px;
+      left: 50%;
+      display: block;
+      flex: none;
+      overflow: hidden;
+      transform: translateX(-50%);
+      transition: transform 220ms cubic-bezier(0.34, 1.35, 0.5, 1);
+      will-change: transform;
+    }
+
+    .tab-item.active .tab-icon {
+      filter: none;
+    }
+
+    .tab-icon-image {
+      --icon-top: 0px;
+      --icon-right: 0px;
+      --icon-bottom: 0px;
+      --icon-left: 0px;
+      width: 26px;
+      height: 26px;
+      width: calc(var(--tab-icon-size) - var(--icon-left) - var(--icon-right));
+      height: calc(var(--tab-icon-size) - var(--icon-top) - var(--icon-bottom));
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      top: var(--icon-top);
+      right: var(--icon-right);
+      bottom: var(--icon-bottom);
+      left: var(--icon-left);
+      display: block;
+      object-fit: fill;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 160ms ease;
+    }
+
+    .tab-item > span:last-child {
+      width: 52px;
+      position: absolute;
+      top: 35px;
+      left: 0;
+      display: block;
+      text-align: center;
+    }
+
+    .tab-item[data-tab="home"] .tab-icon-image {
+      --icon-top: 3px;
+      --icon-right: 2px;
+      --icon-bottom: 2px;
+      --icon-left: 2px;
+      width: 22px;
+      height: 21px;
+      top: 3px;
+      right: 2px;
+      bottom: 2px;
+      left: 2px;
+    }
+
+    .tab-item[data-tab="record"] .tab-icon-image {
+      --icon-top: 2px;
+      --icon-right: 3px;
+      --icon-bottom: 2px;
+      --icon-left: 3px;
+      width: 20px;
+      height: 22px;
+      top: 2px;
+      right: 3px;
+      bottom: 2px;
+      left: 3px;
+    }
+
+    .tab-item[data-tab="rebate"] .tab-icon-image {
+      --icon-top: 2px;
+      --icon-right: 2px;
+      --icon-bottom: 2px;
+      --icon-left: 2px;
+      width: 22px;
+      height: 22px;
+      top: 2px;
+      right: 2px;
+      bottom: 2px;
+      left: 2px;
+    }
+
+    .tab-item[data-tab="message"] .tab-icon-image {
+      --icon-top: 0px;
+      --icon-right: 0px;
+      --icon-bottom: 0px;
+      --icon-left: 0px;
+      width: 26px;
+      height: 26px;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+
+    .tab-item[data-tab="me"] .tab-icon-image {
+      --icon-top: 2.7px;
+      --icon-right: 2.5px;
+      --icon-bottom: 2.3px;
+      --icon-left: 2.5px;
+      width: 21px;
+      height: 21px;
+      top: 2.7px;
+      right: 2.5px;
+      bottom: 2.3px;
+      left: 2.5px;
+    }
+
+    .tab-icon-image.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .tab-item.active .tab-icon-image.active {
+      filter: none;
+    }
+
+    .tab-icon.glass-sucked {
+      animation: glassSucked var(--suck-duration, 520ms) cubic-bezier(0.2, 0.82, 0.28, 1) both;
+    }
+
+    .tab-icon.glass-sucked::after {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at var(--suck-origin, 50%) 50%, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0) 58%),
+        linear-gradient(90deg, rgba(185, 235, 255, 0.065), rgba(255, 255, 255, 0), rgba(255, 190, 224, 0.055));
+      opacity: 0;
+      mix-blend-mode: screen;
+      pointer-events: none;
+      animation: iconLensSweep var(--suck-duration, 520ms) cubic-bezier(0.2, 0.82, 0.28, 1) both;
+    }
+
+    @keyframes glassSucked {
+      0% {
+        filter: none;
+        transform: translateX(-50%) scale(1);
+      }
+      38% {
+        filter: brightness(1.04) saturate(1.06);
+        transform: translateX(calc(-50% + var(--suck-pull, 0px))) scale(0.975, 1.02);
+      }
+      72% {
+        filter: brightness(0.98) saturate(1.02);
+        transform: translateX(-50%) scale(1.012, 0.992);
+      }
+      100% {
+        filter: none;
+        transform: translateX(-50%) scale(1);
+      }
+    }
+
+    @keyframes iconLensSweep {
+      0% {
+        opacity: 0;
+        transform: translateX(calc(var(--suck-pull, 0px) * -0.5)) scaleX(0.58);
+      }
+      34% {
+        opacity: 0.22;
+        transform: translateX(var(--suck-pull, 0px)) scaleX(0.82);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(calc(var(--suck-pull, 0px) * 0.2)) scaleX(0.7);
+      }
+    }
+
+    .tab-item:focus-visible,
+    .publish-button:focus-visible {
+      outline: 2px solid #ff4d88;
+      outline-offset: 2px;
+      border-radius: 8px;
+    }
+
+    /* 发布按钮:从 display 切换改为透明度+缩放弹出,和 Liquid Glass 动效一致 */
+    .publish-button {
+      width: 64px;
+      height: 64px;
+      width: var(--publish-size);
+      height: var(--publish-size);
+      position: absolute;
+      top: 626px;
+      top: calc(var(--tabbar-top) - var(--publish-gap) - var(--publish-size));
+      right: 4px;
+      z-index: 11;
+      border: 0;
+      padding: 0;
+      border-radius: 50%;
+      background: url("../../assets/publish-liquid.svg") center / contain no-repeat;
+      background: var(--publish-image) center / contain no-repeat;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      opacity: 0;
+      transform: none;
+      pointer-events: none;
+      transition: none;
+    }
+
+    .publish-button.visible {
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+    }
+
+    .homebar {
+      width: 100%;
+      height: 34px;
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 12;
+      pointer-events: none;
+      background: url("../../assets/homebar.svg") center / 100% 100% no-repeat;
+      background: var(--homebar-image) center / 100% 100% no-repeat;
+    }
+
+    @media (max-width: 420px) {
+      body {
+        padding: 0;
+      }
+
+      .phone {
+        width: 100vw;
+        height: var(--phone-h);
+        box-shadow: none;
+      }
+
+      .page-stack,
+      .page-image {
+        width: 100vw;
+      }
+
+      .page-stack {
+        height: calc(var(--page-h, 1345px) * (100vw / 375));
+      }
+
+      .page-image {
+        height: calc(var(--page-img-h, 1345px) * (100vw / 375));
+      }
+
+      .tabbar {
+        width: calc(var(--tabbar-w) * (100vw / 375));
+        height: calc(var(--tabbar-h) * (100vw / 375));
+        padding: 0;
+        border-radius: calc(30px * (100vw / 375));
+      }
+
+      .publish-button {
+        right: calc(4px * (100vw / 375));
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="phone" aria-label="Liquid UI 五 Tab 预演">
+    <div class="screen-scroll" aria-label="可滑动页面内容">
+      <div class="page-stack"></div>
+    </div>
+
+    <nav class="tabbar" aria-label="底部导航">
+      <span class="selection-trail" aria-hidden="true"></span>
+      <span class="selection" aria-hidden="true"></span>
+      <button class="tab-item active" type="button" data-tab="home" aria-current="page">
+        <span class="tab-icon" aria-hidden="true">
+          <img class="tab-icon-image off" src="../../assets/icon-home-off.svg" alt="" width="26" height="26">
+          <img class="tab-icon-image on active" src="../../assets/tabbar-home-on.svg" alt="" width="26" height="26">
+        </span>
+        <span>美柚</span>
+      </button>
+      <button class="tab-item" type="button" data-tab="record">
+        <span class="tab-icon" aria-hidden="true">
+          <img class="tab-icon-image off active" src="../../assets/tabbar-record-off.svg" alt="" width="26" height="26">
+          <img class="tab-icon-image on" src="../../assets/icon-record-on.svg" alt="" width="26" height="26">
+        </span>
+        <span>记录</span>
+      </button>
+      <button class="tab-item" type="button" data-tab="rebate">
+        <span class="tab-icon" aria-hidden="true">
+          <img class="tab-icon-image off active" src="../../assets/tabbar-rebate-off.svg" alt="" width="26" height="26">
+          <img class="tab-icon-image on" src="../../assets/icon-rebate-on.svg" alt="" width="26" height="26">
+        </span>
+        <span>返现</span>
+      </button>
+      <button class="tab-item" type="button" data-tab="message">
+        <span class="tab-icon" aria-hidden="true">
+          <img class="tab-icon-image off active" src="../../assets/tabbar-message-off.svg" alt="" width="26" height="26">
+          <img class="tab-icon-image on" src="../../assets/icon-message-on.svg" alt="" width="26" height="26">
+        </span>
+        <span>消息</span>
+      </button>
+      <button class="tab-item" type="button" data-tab="me">
+        <span class="tab-icon" aria-hidden="true">
+          <img class="tab-icon-image off active" src="../../assets/tabbar-me-off.svg" alt="" width="26" height="26">
+          <img class="tab-icon-image on" src="../../assets/icon-me-on.svg" alt="" width="26" height="26">
+        </span>
+        <span>我</span>
+      </button>
+    </nav>
+
+    <button class="publish-button" type="button" aria-label="发布"></button>
+    <div class="homebar" aria-hidden="true"></div>
+  </main>
+
+  <script>
+    /* 页面高度直接取自 Figma 3:3 每个 frame 的高度 */
+    const pages = {
+      home: {
+        label: "首页",
+        image: "../../assets/page-home.png",
+        height: 1345,
+        selectionX: 0,
+        publish: true
+      },
+      record: {
+        label: "记录",
+        image: "../../assets/page-record.png",
+        height: 1113,
+        selectionX: 69
+      },
+      rebate: {
+        label: "返现",
+        image: "../../assets/page-rebate.png",
+        height: 1113,
+        selectionX: 137.26
+      },
+      message: {
+        label: "消息",
+        image: "../../assets/page-message.png",
+        height: 1113,
+        selectionX: 205
+      },
+      me: {
+        label: "我",
+        image: "../../assets/page-me.png",
+        height: 881,
+        selectionX: 273.68
+      }
+    };
+
+    const icons = {
+      home: {
+        off: "../../assets/icon-home-off.svg",
+        on: "../../assets/tabbar-home-on.svg"
+      },
+      record: {
+        off: "../../assets/tabbar-record-off.svg",
+        on: "../../assets/icon-record-on.svg"
+      },
+      rebate: {
+        off: "../../assets/tabbar-rebate-off.svg",
+        on: "../../assets/icon-rebate-on.svg"
+      },
+      message: {
+        off: "../../assets/tabbar-message-off.svg",
+        on: "../../assets/icon-message-on.svg"
+      },
+      me: {
+        off: "../../assets/tabbar-me-off.svg",
+        on: "../../assets/icon-me-on.svg"
+      }
+    };
+
+    const phone = document.querySelector(".phone");
+    const scroller = document.querySelector(".screen-scroll");
+    const pageStack = document.querySelector(".page-stack");
+    const trailEl = document.querySelector(".selection-trail");
+    const selectionEl = document.querySelector(".selection");
+    const tabs = Array.prototype.slice.call(document.querySelectorAll(".tab-item"));
+    const publishButton = document.querySelector(".publish-button");
+    const pageImages = new Map();
+    const iconImages = new Map();
+    let requestedTab = "home";
+    let currentMaxScroll = 0;
+
+    /* ══════════════════════════════════════════════════════
+       iOS 26 Liquid Glass 切换动效核心
+       ══════════════════════════════════════════════════════ */
+    const PILL_LEFT = 3.32; // CSS 里 .selection 的 left
+    const PILL_W = 69.96;
+    let activePillAnim = null;           // 当前正在跑的 Web Animation
+    let activeTrailTimer = null;
+    let currentPillX = 0;                // "静止时" 药丸应处的 X (translateX 值)
+    const tabOrder = tabs.map(function(tab) {
+      return tab.dataset.tab;
+    });
+
+    /** 读取药丸此刻的真实可视 X(用于中断续接) */
+    function readLivePillX() {
+      const pillRect = selectionEl.getBoundingClientRect();
+      const barRect = selectionEl.parentElement.getBoundingClientRect();
+      // 反推 translateX:视觉 left = barLeft + PILL_LEFT + translateX
+      // 由于动画中可能带 scaleX,这里近似用中心点反推更稳:
+      const pillCenterX = pillRect.left + pillRect.width / 2;
+      const pillBaseCenterX = barRect.left + PILL_LEFT + PILL_W / 2;
+      return pillCenterX - pillBaseCenterX;
+    }
+
+    function getSelectionXForTab(tabName) {
+      let tab = null;
+      for (let i = 0; i < tabs.length; i += 1) {
+        if (tabs[i].dataset.tab === tabName) {
+          tab = tabs[i];
+          break;
+        }
+      }
+      if (!tab) return pages[tabName] ? pages[tabName].selectionX : 0;
+
+      const tabRect = tab.getBoundingClientRect();
+      const barRect = selectionEl.parentElement.getBoundingClientRect();
+      const tabCenterX = tabRect.left + tabRect.width / 2;
+      return tabCenterX - barRect.left - PILL_LEFT - PILL_W / 2;
+    }
+
+    function paintLiquidTrail(fromX, targetX, duration) {
+      if (!trailEl) return;
+
+      const minX = Math.min(fromX, targetX);
+      const width = Math.abs(targetX - fromX) + PILL_W;
+      trailEl.style.setProperty("--trail-left", `${minX}px`);
+      trailEl.style.setProperty("--trail-w", `${width}px`);
+      trailEl.style.setProperty("--trail-duration", `${duration}ms`);
+
+      trailEl.classList.remove("travelling");
+      // 强制重启 CSS animation,让连续快速点击也有新拖尾。
+      void trailEl.offsetWidth;
+      trailEl.classList.add("travelling");
+
+      if (activeTrailTimer) window.clearTimeout(activeTrailTimer);
+      activeTrailTimer = window.setTimeout(function() {
+        trailEl.classList.remove("travelling");
+        activeTrailTimer = null;
+      }, duration + 40);
+    }
+
+    function popChromaticEdge(duration) {
+      selectionEl.classList.remove("chromatic-pop");
+      void selectionEl.offsetWidth;
+      selectionEl.style.setProperty("--chromatic-duration", `${duration}ms`);
+      selectionEl.classList.add("chromatic-pop");
+      window.setTimeout(function() {
+        selectionEl.classList.remove("chromatic-pop");
+      }, duration + 60);
+    }
+
+    function suckIconColor(fromTabName, targetTabName, duration) {
+      const fromIndex = tabOrder.indexOf(fromTabName);
+      const targetIndex = tabOrder.indexOf(targetTabName);
+      const direction = Math.sign(targetIndex - fromIndex) || 1;
+      const minIndex = Math.min(fromIndex, targetIndex);
+      const maxIndex = Math.max(fromIndex, targetIndex);
+
+      tabs.forEach(function(tab, index) {
+        if (index < minIndex || index > maxIndex) return;
+
+        const iconBox = tab.querySelector(".tab-icon");
+        if (!iconBox) return;
+
+        const isTarget = tab.dataset.tab === targetTabName;
+        const localPull = isTarget ? direction * -0.9 : direction * 1.35;
+        const hue = isTarget ? 3 : direction * 2;
+        iconBox.style.setProperty("--suck-duration", `${Math.max(320, duration - index * 14)}ms`);
+        iconBox.style.setProperty("--suck-pull", `${localPull}px`);
+        iconBox.style.setProperty("--suck-origin", direction > 0 ? "18%" : "82%");
+        iconBox.style.setProperty("--suck-hue", `${hue}deg`);
+        iconBox.style.setProperty("--icon-end-brightness", isTarget ? "0" : "0.28");
+
+        iconBox.classList.remove("glass-sucked");
+        void iconBox.offsetWidth;
+        iconBox.classList.add("glass-sucked");
+
+        window.setTimeout(function() {
+          iconBox.classList.remove("glass-sucked");
+        }, duration + 80);
+      });
+    }
+
+    /** 液态玻璃药丸位移:拉伸 + 微压 + 弹性回落 */
+    function morphPillTo(targetX) {
+      // 起点:若有动画在跑,从真实可视位置开始;否则用记录的静止位
+      const fromX = activePillAnim && activePillAnim.playState === "running"
+        ? readLivePillX()
+        : currentPillX;
+
+      // 取消旧动画,避免叠加
+      if (activePillAnim) {
+        activePillAnim.cancel();
+        activePillAnim = null;
+      }
+
+      const distance = targetX - fromX;
+      const absD = Math.abs(distance);
+
+      // 先把 CSS 变量更新为目标值,这样动画 fill:none 结束后自然停在目标位
+      selectionEl.style.setProperty("--selection-x", `${targetX}px`);
+      currentPillX = targetX;
+
+      // 距离极小时直接吸附,不放动画
+      if (absD < 0.5) return;
+
+      if (typeof selectionEl.animate !== "function") {
+        paintLiquidTrail(fromX, targetX, 360);
+        popChromaticEdge(360);
+        return;
+      }
+
+      // 根据距离调幅:位移越大,拉伸越明显,但设上限防止过度变形
+      const stretchX = Math.min(1 + absD / 260, 1.26);
+      const squishY = 1 - (stretchX - 1) * 0.32;
+      const midX = (fromX + targetX) / 2;
+      const overshootX = targetX + Math.sign(distance) * Math.min(absD * 0.045, 6);
+
+      // 时长:基础 460ms,随距离轻微增长
+      const duration = 460 + Math.min(absD * 0.28, 90);
+      paintLiquidTrail(fromX, targetX, duration);
+      popChromaticEdge(duration);
+
+      activePillAnim = selectionEl.animate(
+        [
+          {
+            transform: `translate3d(${fromX}px, 0, 0) scale(1, 1)`,
+            filter: "brightness(1) saturate(1)",
+            offset: 0,
+            easing: "cubic-bezier(0.22, 0.72, 0.3, 1)"
+          },
+          {
+            transform: `translate3d(${midX}px, 0, 0) scale(${stretchX}, ${squishY})`,
+            filter: "brightness(1.08) saturate(1.16)",
+            offset: 0.42,
+            easing: "cubic-bezier(0.2, 0.86, 0.28, 1)"
+          },
+          {
+            transform: `translate3d(${overshootX}px, 0, 0) scale(0.96, 1.035)`,
+            filter: "brightness(1.04) saturate(1.08)",
+            offset: 0.78,
+            easing: "cubic-bezier(0.34, 1.45, 0.54, 1)"
+          },
+          {
+            transform: `translate3d(${targetX}px, 0, 0) scale(1, 1)`,
+            filter: "brightness(1) saturate(1)",
+            offset: 1
+          }
+        ],
+        {
+          duration,
+          fill: "none" // 结束后回归 CSS 静止态(由 --selection-x 决定)
+        }
+      );
+
+      activePillAnim.addEventListener("finish", function() {
+        if (activePillAnim && activePillAnim.playState === "finished") {
+          activePillAnim = null;
+        }
+      });
+      activePillAnim.addEventListener("cancel", function() {
+        activePillAnim = null;
+      });
+    }
+
+    /** 新选中的图标做一次"按压—回弹"的触觉反馈 */
+    function bounceIcon(tab) {
+      const iconBox = tab.querySelector(".tab-icon");
+      if (!iconBox) return;
+      if (typeof iconBox.animate !== "function") {
+        iconBox.classList.add("glass-sucked");
+        window.setTimeout(function() {
+          iconBox.classList.remove("glass-sucked");
+        }, 320);
+        return;
+      }
+      iconBox.animate(
+        [
+          { transform: "translateX(-50%) scale(1)" },
+          { transform: "translateX(-50%) scale(0.86)", offset: 0.22 },
+          { transform: "translateX(-50%) scale(1.1)", offset: 0.6 },
+          { transform: "translateX(-50%) scale(1)" }
+        ],
+        {
+          duration: 420,
+          easing: "cubic-bezier(0.34, 1.3, 0.5, 1)"
+        }
+      );
+    }
+
+    /* ══════════════════════════════════════════════════════
+       原有页面切换逻辑(保留)
+       ══════════════════════════════════════════════════════ */
+    function getReadyPromise(img) {
+      if (img.decode) {
+        return img.decode().catch(function() {});
+      }
+      return Promise.resolve();
+    }
+
+    function buildPageImages() {
+      Object.keys(pages).forEach(function(tabName, index) {
+        const page = pages[tabName];
+        const img = document.createElement("img");
+        img.className = "page-image";
+        img.dataset.tab = tabName;
+        img.src = page.image;
+        img.alt = page.label;
+        img.width = 375;
+        img.height = page.height;
+        img.decoding = "async";
+        img.loading = "eager";
+        if ("fetchPriority" in img) {
+          img.fetchPriority = index < 2 ? "high" : "low";
+        }
+        img.style.setProperty("--page-img-h", `${page.height}px`);
+        pageStack.appendChild(img);
+        pageImages.set(tabName, img);
+        page.ready = getReadyPromise(img);
+      });
+    }
+
+    function buildIconImages() {
+      tabs.forEach(function(tab) {
+        const tabName = tab.dataset.tab;
+        const iconBox = tab.querySelector(".tab-icon");
+        const states = {};
+        ["off", "on"].forEach(function(state) {
+          const existing = iconBox.querySelector(".tab-icon-image." + state);
+          if (existing) {
+            existing.decoding = "async";
+            existing.loading = "eager";
+            states[state] = existing;
+            getReadyPromise(existing);
+            return;
+          }
+          const img = document.createElement("img");
+          img.className = `tab-icon-image ${state}`;
+          img.src = icons[tabName][state];
+          img.alt = "";
+          img.width = 26;
+          img.height = 26;
+          img.decoding = "async";
+          img.loading = "eager";
+          iconBox.appendChild(img);
+          states[state] = img;
+          getReadyPromise(img);
+        });
+        iconImages.set(tabName, states);
+      });
+    }
+
+    function getMaxScrollForPage(page) {
+      const pageHeight = page && page.height ? page.height : 0;
+      return Math.max(0, Math.round(pageHeight - scroller.clientHeight));
+    }
+
+    function clampScroller() {
+      if (scroller.scrollTop > currentMaxScroll) {
+        scroller.scrollTop = currentMaxScroll;
+      }
+      if (scroller.scrollTop < 0) {
+        scroller.scrollTop = 0;
+      }
+    }
+
+    function setTabbar(tabName, opts) {
+      opts = opts || {};
+      const animate = opts.animate !== false;
+      const page = pages[tabName];
+      let previousTab = requestedTab;
+      for (let i = 0; i < tabs.length; i += 1) {
+        if (tabs[i].classList.contains("active")) {
+          previousTab = tabs[i].dataset.tab;
+          break;
+        }
+      }
+      const targetSelectionX = getSelectionXForTab(tabName);
+      currentMaxScroll = getMaxScrollForPage(page);
+      phone.style.setProperty("--page-h", `${page.height}px`);
+
+      // 🔥 关键变化:不再直接写 --selection-x,而是交给 morphPillTo 做液态动画
+      if (animate) {
+        morphPillTo(targetSelectionX);
+        if (previousTab !== tabName) {
+          suckIconColor(previousTab, tabName, 520);
+        }
+      } else {
+        // 初始化:直接落位,不放动画
+        selectionEl.style.setProperty("--selection-x", `${targetSelectionX}px`);
+        currentPillX = targetSelectionX;
+      }
+
+      publishButton.classList.toggle("visible", Boolean(page.publish));
+
+      tabs.forEach(function(tab) {
+        const active = tab.dataset.tab === tabName;
+        const wasActive = tab.classList.contains("active");
+        tab.classList.toggle("active", active);
+        const states = iconImages.get(tab.dataset.tab);
+        states.on.classList.toggle("active", active);
+        states.off.classList.toggle("active", !active);
+        if (active) {
+          tab.setAttribute("aria-current", "page");
+          // 刚被激活的 tab 弹一下图标
+          if (animate && !wasActive) bounceIcon(tab);
+        } else {
+          tab.removeAttribute("aria-current");
+        }
+      });
+    }
+
+    function activatePage(tabName) {
+      const page = pages[tabName];
+      currentMaxScroll = getMaxScrollForPage(page);
+      phone.style.setProperty("--page-h", `${page.height}px`);
+      pageImages.forEach(function(img, key) {
+        img.classList.toggle("active", key === tabName);
+      });
+      if (typeof scroller.scrollTo === "function") {
+        try {
+          scroller.scrollTo({ top: 0, behavior: "instant" });
+        } catch (error) {
+          scroller.scrollTo(0, 0);
+        }
+      } else {
+        scroller.scrollTop = 0;
+      }
+      clampScroller();
+    }
+
+    function setActiveTab(tabName, opts) {
+      opts = opts || {};
+      requestedTab = tabName;
+      setTabbar(tabName, opts);
+      pages[tabName].ready.then(function() {
+        if (requestedTab === tabName) {
+          activatePage(tabName);
+        }
+      });
+    }
+
+    tabs.forEach(function(tab) {
+      tab.addEventListener("click", function() {
+        setActiveTab(tab.dataset.tab);
+      });
+    });
+
+    scroller.addEventListener("scroll", function() {
+      window.requestAnimationFrame(clampScroller);
+    }, { passive: true });
+
+    buildPageImages();
+    buildIconImages();
+    // 首次进入 home 不放位移动画(避免首屏没有动)
+    setActiveTab("home", { animate: false });
+  </script>
+</body>
+</html>
