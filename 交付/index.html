@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>LiquidUI</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+      --bg: #ffffff;
+      --text: #172033;
+      --muted: #7b8497;
+      --line: #e7ebf1;
+      --shadow: 0 14px 36px rgba(19, 28, 45, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .page {
+      width: min(100vw, 720px);
+      margin: 0 auto;
+      padding: 28px 16px 40px;
+    }
+
+    h1 {
+      margin: 0 0 24px;
+      font-size: 36px;
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+
+    .entries {
+      display: grid;
+      gap: 12px;
+    }
+
+    .entry {
+      display: block;
+      width: 100%;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+      color: var(--text);
+      text-decoration: none;
+      box-shadow: var(--shadow);
+    }
+
+    .entry-name {
+      display: block;
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .entry-tip {
+      display: block;
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <h1>LiquidUI</h1>
+    <section class="entries" aria-label="方案入口">
+      <a class="entry" href="./scheme-1-light.html">
+        <span class="entry-name">方案1偏白</span>
+        <span class="entry-tip">点击进入</span>
+      </a>
+      <a class="entry" href="./scheme-3-pure-gray.html">
+        <span class="entry-name">方案2偏灰</span>
+        <span class="entry-tip">点击进入</span>
+      </a>
+      <a class="entry" href="./scheme-2-gray.html">
+        <span class="entry-name">方案3纯灰</span>
+        <span class="entry-tip">点击进入</span>
+      </a>
+      <a class="entry" href="./scheme-4-mixed.html">
+        <span class="entry-name">方案4混合</span>
+        <span class="entry-tip">点击进入</span>
+      </a>
+    </section>
+  </main>
+</body>
+</html>
